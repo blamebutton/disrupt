@@ -1,3 +1,11 @@
-/.idea
+# Project
+.dockerignore
+.gitignore
+README.md
+
+# Python
 /venv
+
+# JetBrains
+/.idea
 *.iml
