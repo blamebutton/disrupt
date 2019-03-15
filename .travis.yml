@@ -8,14 +8,14 @@ python:
 services:
   - docker
 
+cache: pip
+
+branches:
+  only:
+    - master
+
 install:
   - pip install -r requirements.txt
 
 script:
-  - docker build .
-
-deploy:
-  provider: script
-  script: scripts/deploy-docker.sh
-  on:
-    branch: master
+  - .travis/docker-deploy.sh
