@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import time
 from os import getenv
 
@@ -8,16 +10,25 @@ from docker.models.images import Image
 from docker.models.services import Service
 
 
+class DisectException(Exception):
+    pass
+
+
 def main():
     """
-    Loops over all the Swarm services, checking if they need updates
+    Loops over all the Swarm services, checking if they need updates.
 
     :raises Exception when Docker Engine is not in Swarm Mode
     """
     update_delay = getenv('UPDATE_DELAY', '300')
     notification_url = getenv('NOTIFICATION_URL', '')
 
-    client = docker.from_env()
+    try:
+        client = docker.from_env()
+    except ConnectionError:
+        print(
+            'Could not connect to Docker Engine. Mount the Docker socket or set the DOCKET_HOST environment variable.')
+        return
     apprise = Apprise(notification_url)
     if not is_swarm(client):
         raise Exception('Docker Engine is not in Swarm Mode')
@@ -53,11 +64,13 @@ def update_services(client: DockerClient, apprise: Apprise):
             is_outdated, new_tag = is_service_outdated(client, service)
         except DisectException:
             # Skip updating this service when image tag could not be extracted
-            print(service, 'could not be updated, invalid image found.')
+            print(f'{service.name} could not be checked for updates, invalid image found.')
             continue
         mode = service.attrs['Spec']['Mode']
+
+        update_message = f'Found update for `{new_tag}`, updating.'
+
         replicated = 'Replicated' in mode
-        update_message = 'Found update for `' + new_tag + '`, updating.'
         if replicated:
             replicas = mode['Replicated']['Replicas']
             plural = 's' if replicas > 1 else ''
@@ -65,16 +78,20 @@ def update_services(client: DockerClient, apprise: Apprise):
 
         if is_outdated:
             apprise.notify(
-                title='Service: `' + service.name + '`',
+                title=f'Service: `{service.name}`',
                 body=update_message,
                 notify_type=NotifyType.INFO)
+
+            print(f'Found update for service {service.name}, updating using image {new_tag}')
             start = time.time()
-            service.update(image=new_tag)
+            service.update(image=new_tag)  # Update the service
             end = time.time()
-            elapsed = str((end - start))[:4]
+            elapsed = str((end - start))[:4]  # Calculate the time it took to update the service
+            print(f'Update for service {service.name} successful, took {elapsed} seconds')
+
             apprise.notify(
-                title='Service: `' + service.name + '`',
-                body='Update successful. Took ' + elapsed + ' seconds.',
+                title=f'Service: `{service.name}`',
+                body=f'Update successful. Took {elapsed} seconds.',
                 notify_type=NotifyType.SUCCESS)
 
 
@@ -135,7 +152,3 @@ def disect_image(image: str) -> tuple:
 
 if __name__ == '__main__':
     main()
-
-
-class DisectException(Exception):
-    pass
