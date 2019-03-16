@@ -1,7 +1,10 @@
 # Disturb (Docker Swarm Service Updater)
 
-[![Build Status](https://travis-ci.org/BlameButton/disrupt.svg?branch=master)](https://travis-ci.org/BlameButton/disrupt)
-[![Docker Pulls](https://img.shields.io/docker/pulls/blamebutton/disrupt.svg)](https://hub.docker.com/r/blamebutton/disrupt)
+[![Build Status](https://img.shields.io/travis/BlameButton/disrupt.svg?style=flat-square)](https://travis-ci.org/BlameButton/disrupt)
+[![GitHub contributors](https://img.shields.io/github/contributors/blamebutton/disrupt.svg?style=flat-square)](https://github.com/BlameButton/disrupt/graphs/contributors)
+[![Docker Pulls](https://img.shields.io/docker/pulls/blamebutton/disrupt.svg?style=flat-square)](https://hub.docker.com/r/blamebutton/disrupt)
+[![Discord Widget](https://img.shields.io/discord/556492964050763817.svg?style=flat-square)](https://discord.gg/tDf2yBg)
+
 
 ## Notifications
 
