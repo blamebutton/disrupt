@@ -8,6 +8,11 @@
 Disturb uses the `Apprise` notification library for Python. 
 Check out their documentation for more advanced usaged.
 
-### Slack
+## Contributing
 
-### Discord
+Feel free to make a feature request or if you have Python experience; pull requests are welcome too!
+
+## Support 
+
+If you're having trouble getting Disrupt to work, we have a [Discord server](https://discord.gg/tDf2yBg)
+for support and questions.
