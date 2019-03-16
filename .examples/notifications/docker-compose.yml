@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  web:
+    image: jwilder/whoami:latest
+    ports:
+      - "8080:8000"
+
+  disrupt:
+    image: blamebutton/disrupt:latest
+    volumes:
+       - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+      UPDATE_DELAY: 300
+      NOTIFICATION_URL: discord://webhook_id/webhook_token
+    deploy:
+      placement:
+        constraints:
+        - node.role == manager
