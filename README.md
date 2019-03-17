@@ -14,7 +14,7 @@ services:
   whoami:
     image: jwilder/whoami
     ports:
-      - 8000:8000
+      - 8080:8000
   
   disrupt:
     image: blamebutton/disrupt
