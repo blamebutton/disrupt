@@ -11,7 +11,7 @@
 Disrupt uses the [Apprise](https://github.com/caronc/apprise) notification library for Python. 
 Check out their documentation for more advanced usages.
 
-Here is a small list of notificatio providers Apprise supports:
+Here is a small list of notification providers that Apprise supports:
 
 - Slack
 - Discord

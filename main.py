@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-
+import logging
 import time
 from os import getenv
+from sys import stdout
 
 import docker
 from apprise import Apprise, NotifyType
@@ -12,6 +13,14 @@ from docker.models.services import Service
 
 class DisectException(Exception):
     pass
+
+
+logger = logging.getLogger('Disrupt')
+handler = logging.StreamHandler(stream=stdout)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
 
 
 def main():
@@ -26,18 +35,23 @@ def main():
     try:
         client = docker.from_env()
     except ConnectionError:
-        print(
-            'Could not connect to Docker Engine. Mount the Docker socket or set the DOCKET_HOST environment variable.')
+        logger.error('Could not connect to Docker Engine. Check https://git.io/fjvRd for possible solutions')
         return
-    apprise = Apprise(notification_url)
-    if not is_swarm(client):
+
+    logger.info('Started checking for updates')
+    apprise = Apprise()
+    if len(notification_url) > 0:
+        # Add notification provider from URL if provided
+        apprise.add(notification_url)
+
+    if not is_swarm_manager(client):
         raise Exception('Docker Engine is not in Swarm Mode')
     while True:
         update_services(client, apprise)
         time.sleep(float(update_delay))
 
 
-def is_swarm(client: DockerClient) -> bool:
+def is_swarm_manager(client: DockerClient) -> bool:
     """
     Check if the given client is connected to a Docker Engine
     running in Swarm Mode and has the manager role.
@@ -60,16 +74,17 @@ def update_services(client: DockerClient, apprise: Apprise):
     """
     services = client.services.list()
     for service in services:
+        name = service.name
+
         try:
             is_outdated, new_tag = is_service_outdated(client, service)
         except DisectException:
             # Skip updating this service when image tag could not be extracted
-            print(f'{service.name} could not be checked for updates, invalid image found.')
+            logger.error(f'{name} could not be checked for updates, invalid image found.')
             continue
-        mode = service.attrs['Spec']['Mode']
 
         update_message = f'Found update for `{new_tag}`, updating.'
-
+        mode = service.attrs['Spec']['Mode']
         replicated = 'Replicated' in mode
         if replicated:
             replicas = mode['Replicated']['Replicas']
@@ -78,21 +93,23 @@ def update_services(client: DockerClient, apprise: Apprise):
 
         if is_outdated:
             apprise.notify(
-                title=f'Service: `{service.name}`',
+                title=f'Service: `{name}`',
                 body=update_message,
                 notify_type=NotifyType.INFO)
 
-            print(f'Found update for service {service.name}, updating using image {new_tag}')
+            logger.info(f'Found update for service {name}, updating using image {new_tag}')
             start = time.time()
             service.update(image=new_tag)  # Update the service
             end = time.time()
             elapsed = str((end - start))[:4]  # Calculate the time it took to update the service
-            print(f'Update for service {service.name} successful, took {elapsed} seconds')
+            logger.info(f'Update for service {name} successful, took {elapsed} seconds')
 
             apprise.notify(
-                title=f'Service: `{service.name}`',
+                title=f'Service: `{name}`',
                 body=f'Update successful. Took {elapsed} seconds.',
                 notify_type=NotifyType.SUCCESS)
+        else:
+            logger.info(f'No update found for service {name}')
 
 
 def is_service_outdated(client: DockerClient, service: Service) -> tuple:
@@ -106,12 +123,12 @@ def is_service_outdated(client: DockerClient, service: Service) -> tuple:
     """
     image_tag, image_hash = disect_service(service)
     remote_image = client.images.pull(image_tag)
-    remote_digest = disect_repo_digest(remote_image)
+    remote_digest = get_repo_digest(remote_image)
     _, pulled_digest = disect_image(remote_digest)
     return image_hash != pulled_digest, image_tag
 
 
-def disect_repo_digest(repo_digest: Image) -> str:
+def get_repo_digest(repo_digest: Image) -> str:
     return repo_digest.attrs['RepoDigests'][0]
 
 
@@ -142,12 +159,9 @@ def disect_image(image: str) -> tuple:
     :param image: the image string, containing the name, tag and hash
     :return: image name and hash, image hash
     :rtype: tuple
-    :raises DisectException: when the image name+tag+digest could not be split into a tuple
     """
     tag = image.split('@')
-    if len(tag) != 2:
-        raise DisectException('Unable to disect image digest.')
-    return tag[0], tag[1]
+    return tag[0], tag[1] if len(tag) > 1 else None
 
 
 if __name__ == '__main__':
