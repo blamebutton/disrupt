@@ -1,4 +1,4 @@
-# Disturb (Docker Swarm Service Updater)
+# Disrupt (Docker Swarm Service Updater)
 
 [![Build Status](https://img.shields.io/travis/BlameButton/disrupt.svg?style=flat-square)](https://travis-ci.org/BlameButton/disrupt)
 [![GitHub contributors](https://img.shields.io/github/contributors/blamebutton/disrupt.svg?style=flat-square)](https://github.com/BlameButton/disrupt/graphs/contributors)
@@ -8,7 +8,7 @@
 
 ## Notifications
 
-Disturb uses the [Apprise](https://github.com/caronc/apprise) notification library for Python. 
+Disrupt uses the [Apprise](https://github.com/caronc/apprise) notification library for Python. 
 Check out their documentation for more advanced usages.
 
 Here is a small list of notificatio providers Apprise supports:
