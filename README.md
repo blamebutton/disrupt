@@ -23,7 +23,7 @@ services:
     deploy:
       placement:
         constraints:
-          # Disrupt needs permission to update services, only managers are allowed to do thaat.
+          # Disrupt needs permission to update services, only managers are allowed to do that.
           - node.role == manager
 ```
 
