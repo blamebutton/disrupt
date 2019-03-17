@@ -63,7 +63,9 @@ In the special case that you are accessing Docker over TCP, you should place Dis
 same network as your TCP socket. Using a Docker socket proxy (like 
 [docker-socket-proxy](https://hub.docker.com/r/tecnativa/docker-socket-proxy/), or 
 [sockguard](https://github.com/buildkite/sockguard)) is recommended for enhanced security 
-in this case.
+in this case. You could then configure the proxy to only allow `GET` requests for service info, 
+for example. That way, if the Disrupt container gets compromised it can't do any harm to the 
+cluster in the form of modifications/destructive instructions.  
 
 ## Support 
 
