@@ -8,8 +8,18 @@
 
 ## Notifications
 
-Disturb uses the `Apprise` notification library for Python. 
-Check out their documentation for more advanced usaged.
+Disturb uses the [Apprise](https://github.com/caronc/apprise) notification library for Python. 
+Check out their documentation for more advanced usages.
+
+Here is a small list of notificatio providers Apprise supports:
+
+- Slack
+- Discord
+- Telegram
+- PushBullet
+- Dbus
+- Mail
+- Custom notifications to a given URL in JSON or XML format
 
 ## Contributing
 
