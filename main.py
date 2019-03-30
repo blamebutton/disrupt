@@ -92,10 +92,11 @@ def update_services(client: DockerClient, apprise: Apprise):
 
             logger.info(f'Found update for service \'{name}\', updating using image {tag}')
             start = time.time()
-            service.update(image=tag, force_update=True)  # Update the service
+            full_image = f"{tag}@{digest}"
+            service.update(image=full_image)  # Update the service
             end = time.time()
             elapsed = str((end - start))[:4]  # Calculate the time it took to update the service
-            logger.info(f'Update for service \'{name}\' successful, took {elapsed} seconds')
+            logger.info(f'Update for service \'{name}\' successful, took {elapsed} seconds ({full_image})')
 
             success_message = f'Update successful. Took {elapsed} seconds.'
             apprise.notify(title=f'Service: `{name}`', body=success_message, notify_type=NotifyType.SUCCESS)
@@ -134,7 +135,7 @@ def split_image(tag: str) -> tuple:
 
     Would return::
 
-        ('python:latest', '3f8bb7c750e86d031dd14c65d331806105ddc0c6f037ba29510f9b9fbbb35960')
+        ('python:latest', 'sha256:3f8bb7c750e86d031dd14c65d331806105ddc0c6f037ba29510f9b9fbbb35960')
 
     :param tag: the image tag to split up
     :return: the split up image tag
