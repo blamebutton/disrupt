@@ -93,7 +93,7 @@ def update_services(client: DockerClient, apprise: Apprise):
             logger.info(f'Found update for service \'{name}\', updating using image {tag}')
             start = time.time()
             full_image = f"{tag}@{digest}"
-            service.update(image=full_image)  # Update the service
+            service.update(image=full_image, force_update=True)  # Update the service
             end = time.time()
             elapsed = str((end - start))[:4]  # Calculate the time it took to update the service
             logger.info(f'Update for service \'{name}\' successful, took {elapsed} seconds ({full_image})')
