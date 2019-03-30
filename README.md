@@ -29,8 +29,7 @@ services:
 
 For more examples, check out the [examples folder](/.examples)
 
-**Note**: Since Disrupt checks for updates by pulling the latest image, images built locally 
-won't trigger an update for now. 
+**Note**: Docker Swarm does not support running locally built images, so neither does Disrupt.
 
 ## Notifications
 
