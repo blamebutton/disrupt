@@ -19,6 +19,7 @@ services:
   disrupt:
     image: blamebutton/disrupt
     volumes:
+      # Mount the Docker socket, this is required for interacting with the Docker API.
       - /var/run/docker.sock:/var/run/docker.sock
     deploy:
       placement:
