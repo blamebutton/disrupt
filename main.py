@@ -98,8 +98,7 @@ def update_services(client: DockerClient, apprise: Apprise):
             elapsed = str((end - start))[:4]  # Calculate the time it took to update the service
             logger.info(f'Update for service \'{name}\' successful, took {elapsed} seconds ({full_image})')
 
-            success_message = f'Update successful. Took {elapsed} seconds.'
-            apprise.notify(title=f'Service: `{name}`', body=success_message, notify_type=NotifyType.SUCCESS)
+            apprise.notify(title=f'Docker Swarm Service Updated', body=f'{name} ({tag})', notify_type=NotifyType.SUCCESS)
         else:
             logger.debug(f'No update found for service \'{name}\'')
 
