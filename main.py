@@ -88,8 +88,6 @@ def update_services(client: DockerClient, apprise: Apprise):
                 plural = 's' if replicas > 1 else ''
                 update_message = f"Found update for `{tag}`, updating {replicas} replica{plural}."
 
-            apprise.notify(title=f'Service: `{name}`', body=update_message, notify_type=NotifyType.INFO)
-
             logger.info(f'Found update for service \'{name}\', updating using image {tag}')
             start = time.time()
             full_image = f"{tag}@{digest}"
