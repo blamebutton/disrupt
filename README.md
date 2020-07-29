@@ -1,6 +1,7 @@
 # Disrupt (Docker Swarm Service Updater)
 
-![GitHub](https://img.shields.io/github/license/BlameButton/disrupt)
+[![GitHub release](https://img.shields.io/github/v/release/BlameButton/disrupt?include_prereleases)](https://github.com/BlameButton/disrupt/releases)
+[![GitHub](https://img.shields.io/github/license/BlameButton/disrupt)](https://github.com/BlameButton/disrupt/blob/master/LICENSE)
 [![GitHub contributors](https://img.shields.io/github/contributors/blamebutton/disrupt?style=flat-square)](https://github.com/BlameButton/disrupt/graphs/contributors)
 
 [![Build Status](https://img.shields.io/travis/com/BlameButton/disrupt/master?style=flat-square)](https://travis-ci.com/BlameButton/disrupt)
