@@ -3,7 +3,7 @@ language: python
 cache: pip
 
 python:
-    - '3.8' # this should be in sync with the Dockerfile base image
+  - '3.8' # this should be in sync with the Dockerfile base image
 
 services:
   - docker
@@ -13,5 +13,11 @@ script:
   - docker build -t $IMAGE .
 
 deploy:
-  provider: script
-  script: .travis/docker-push.sh
+  - provider: script
+    script: .travis/docker-push.sh
+    on:
+      branch: 'master'
+  - provider: script
+    script: .travis/docker-push.sh
+    on:
+      tags: true
