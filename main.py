@@ -13,7 +13,7 @@ from docker.models.images import Image
 from docker.models.services import Service
 
 
-class DisectException(Exception):
+class DissectException(Exception):
     pass
 
 
