@@ -100,6 +100,9 @@ def update_services(client: DockerClient, apprise: Apprise):
 
             success_message = f'Update successful. Took {elapsed} seconds.'
             apprise.notify(title=f'Service: `{name}`', body=success_message, notify_type=NotifyType.SUCCESS)
+            if getenv('PARALLEL_UPDATES', '').lower() in ['false', 'no', 'off', '0']:
+                # When there are more images to update in one pass then update them one by one
+                return
         else:
             logger.debug(f'No update found for service \'{name}\'')
 
