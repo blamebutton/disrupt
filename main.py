@@ -13,7 +13,7 @@ from docker.models.images import Image
 from docker.models.services import Service
 
 
-class DisectException(Exception):
+class DissectException(Exception):
     pass
 
 
@@ -37,7 +37,7 @@ def main():
     try:
         client = docker.from_env()
     except ConnectionError:
-        logger.error('Could not connect to Docker Engine. Check https://git.io/fjvRd for possible solutions')
+        logger.error('Could not connect to Docker Engine. Check https://git.io/JJujV for possible solutions')
         return
 
     logger.info('Started checking for updates')
@@ -60,7 +60,7 @@ def is_swarm_manager(client: DockerClient) -> bool:
 
     :param client: DockerClient
     :rtype: bool
-    :return: true if Docker Engine is in Swarm mode, else falses
+    :return: true if Docker Engine is in Swarm mode, else false
     """
     info = client.info()
     swarm = info['Swarm']
@@ -156,6 +156,8 @@ def get_image_digest(image: Image) -> Optional[str]:
     :param image: the image object to get the digest out of
     :return: the repository digest for the given image or None if it's not present
     """
+    if not isinstance(image, Image):
+        return None
     digests = image.attrs.get('RepoDigests')
     if digests:
         tag, digest = split_image(digests[0])
