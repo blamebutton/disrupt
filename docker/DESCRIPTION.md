@@ -18,5 +18,17 @@
 
 # What is Disrupt?
 
-Disrupt is a Python script that will check for updates for the images of your Docker Swarm services. 
+Disrupt is a Python script that will check for updates for the images of your Docker Swarm services.
 Disrupt can either run in a container or on the host itself.
+
+## Configuration
+
+Configuration of Disrupt is done through environment variables. This is done to make the deployment of Disrupt
+environment-agnostic.
+
+Below is a list of environment variables available to be configured.
+
+| Name | Type | Options |
+| - | - | - |
+| UPDATE_DELAY | Integer | default = 300 |
+| NOTIFICATION_URL | String | Any [Apprise](https://github.com/caronc/apprise#popular-notification-services) compatible URL |
