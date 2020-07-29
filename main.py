@@ -153,6 +153,8 @@ def get_image_digest(image: Image) -> Optional[str]:
     :param image: the image object to get the digest out of
     :return: the repository digest for the given image or None if it's not present
     """
+    if not isinstance(image, Image):
+        return None
     digests = image.attrs.get('RepoDigests')
     if digests:
         tag, digest = split_image(digests[0])
