@@ -10,11 +10,9 @@ services:
   - docker
 
 script:
-  - if [[ -z "$IMAGE_TAG" ]]; then exit 1; fi
-  - docker build -t $IMAGE_TAG .
+  - if [[ -z "$IMAGE" ]]; then exit 1; fi
+  - docker build -t $IMAGE .
 
 deploy:
   provider: script
   script: .travis/docker-push.sh
-  on:
-    branch: master
