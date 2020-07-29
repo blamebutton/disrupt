@@ -60,7 +60,7 @@ def is_swarm_manager(client: DockerClient) -> bool:
 
     :param client: DockerClient
     :rtype: bool
-    :return: true if Docker Engine is in Swarm mode, else falses
+    :return: true if Docker Engine is in Swarm mode, else false
     """
     info = client.info()
     swarm = info['Swarm']
