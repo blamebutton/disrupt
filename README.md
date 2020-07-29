@@ -1,9 +1,11 @@
 # Disrupt (Docker Swarm Service Updater)
 
-[![Build Status](https://img.shields.io/travis/BlameButton/disrupt.svg?style=flat-square)](https://travis-ci.com/BlameButton/disrupt)
-[![GitHub contributors](https://img.shields.io/github/contributors/blamebutton/disrupt.svg?style=flat-square)](https://github.com/BlameButton/disrupt/graphs/contributors)
-[![Docker Pulls](https://img.shields.io/docker/pulls/blamebutton/disrupt.svg?style=flat-square)](https://hub.docker.com/r/blamebutton/disrupt)
-[![Discord Widget](https://img.shields.io/discord/556492964050763817.svg?style=flat-square)](https://discord.gg/tDf2yBg)
+![GitHub](https://img.shields.io/github/license/BlameButton/disrupt)
+[![GitHub contributors](https://img.shields.io/github/contributors/blamebutton/disrupt?style=flat-square)](https://github.com/BlameButton/disrupt/graphs/contributors)
+
+[![Build Status](https://img.shields.io/travis/com/BlameButton/disrupt/master?style=flat-square)](https://travis-ci.com/BlameButton/disrupt)
+[![Docker Pulls](https://img.shields.io/docker/pulls/blamebutton/disrupt?style=flat-square)](https://hub.docker.com/r/blamebutton/disrupt)
+[![Discord Widget](https://img.shields.io/discord/556492964050763817?style=flat-square)](https://discord.gg/tDf2yBg)
 
 ## Usage
 
