@@ -37,7 +37,7 @@ def main():
     try:
         client = docker.from_env()
     except ConnectionError:
-        logger.error('Could not connect to Docker Engine. Check https://git.io/fjvRd for possible solutions')
+        logger.error('Could not connect to Docker Engine. Check https://git.io/JJujV for possible solutions')
         return
 
     logger.info('Started checking for updates')
