@@ -2,6 +2,7 @@
 import logging
 import re
 import time
+from distutils.util import strtobool
 from os import getenv
 from sys import stdout
 from typing import Optional
@@ -15,6 +16,18 @@ from docker.models.services import Service
 
 class DissectException(Exception):
     pass
+
+
+class Config:
+    def __init__(self, client: DockerClient, apprise: Apprise):
+        self.client = client
+        self.apprise = apprise
+        self.update_delay = getenv('UPDATE_DELAY', '300')
+        self.notification_url = getenv('NOTIFICATION_URL', '')
+        try:
+            self.parallel_updates = strtobool(getenv('PARALLEL_UPDATES', True))
+        except ValueError:
+            pass
 
 
 logger = logging.getLogger('Disrupt')
@@ -31,9 +44,6 @@ def main():
 
     :raises Exception when Docker Engine is not in Swarm Mode
     """
-    update_delay = getenv('UPDATE_DELAY', '300')
-    notification_url = getenv('NOTIFICATION_URL', '')
-
     try:
         client = docker.from_env()
     except ConnectionError:
@@ -42,15 +52,16 @@ def main():
 
     logger.info('Started checking for updates')
     apprise = Apprise()
-    if len(notification_url) > 0:
+    config = Config(client, apprise)
+    if len(config.notification_url) > 0:
         # Add notification provider from URL if provided
-        apprise.add(notification_url)
+        apprise.add(config.notification_url)
 
-    if not is_swarm_manager(client):
+    if not is_swarm_manager(config.client):
         raise Exception('Docker Engine is not in Swarm Mode')
     while True:
-        update_services(client, apprise)
-        time.sleep(float(update_delay))
+        update_services(config)
+        time.sleep(float(config.update_delay))
 
 
 def is_swarm_manager(client: DockerClient) -> bool:
@@ -67,44 +78,48 @@ def is_swarm_manager(client: DockerClient) -> bool:
     return swarm['LocalNodeState'] == 'active' and swarm['ControlAvailable']
 
 
-def update_services(client: DockerClient, apprise: Apprise):
+def update_services(config: Config):
     """
     Update all the services found on the Docker Swarm.
 
-    :param client: Docker Client that is connected to a Docker Swarm Manager
-    :param apprise: Apprise notification service
+    :param config: Docker config that is connected to a Docker Swarm Manager
     """
+    client, apprise = config.client, config.apprise
     services = client.services.list()
     logger.info(f'Checking for updates on {len(services)} service(s).')
     for service in services:
         name = service.name
         outdated, tag, digest = is_service_outdated(client, service)
-        if outdated:
-            update_message = f'Found update for `{tag}`, updating.'
-            mode = service.attrs['Spec']['Mode']
-            replicated = 'Replicated' in mode
-            if replicated:
-                replicas = mode['Replicated']['Replicas']
-                plural = 's' if replicas > 1 else ''
-                update_message = f"Found update for `{tag}`, updating {replicas} replica{plural}."
 
-            apprise.notify(title=f'Service: `{name}`', body=update_message, notify_type=NotifyType.INFO)
-
-            logger.info(f'Found update for service \'{name}\', updating using image {tag}')
-            start = time.time()
-            full_image = f"{tag}@{digest}"
-            service.update(image=full_image, force_update=True)  # Update the service
-            end = time.time()
-            elapsed = str((end - start))[:4]  # Calculate the time it took to update the service
-            logger.info(f'Update for service \'{name}\' successful, took {elapsed} seconds ({full_image})')
-
-            success_message = f'Update successful. Took {elapsed} seconds.'
-            apprise.notify(title=f'Service: `{name}`', body=success_message, notify_type=NotifyType.SUCCESS)
-            if getenv('PARALLEL_UPDATES', '').lower() in ['false', 'no', 'off', '0']:
-                # When there are more images to update in one pass then update them one by one
-                return
-        else:
+        if not outdated:
             logger.debug(f'No update found for service \'{name}\'')
+            return
+
+        update_service(config, service, tag, digest)
+
+        if config.parallel_updates:
+            # When there are more images to update in one pass then update them one by one
+            break
+
+
+def update_service(config: Config, service, tag, digest):
+    name = service.name
+    update_message = f'Found update for `{tag}`, updating.'
+    mode = service.attrs['Spec']['Mode']
+    if 'Replicated' in mode:
+        replicas = mode['Replicated']['Replicas']
+        plural = 's' if replicas > 1 else ''
+        update_message = f"Found update for `{tag}`, updating {replicas} replica{plural}."
+    config.apprise.notify(title=f'Service: `{name}`', body=update_message, notify_type=NotifyType.INFO)
+    logger.info(f'Found update for service \'{name}\', updating using image {tag}')
+    start = time.time()
+    full_image = f"{tag}@{digest}"
+    service.update(image=full_image, force_update=True)  # Update the service
+    end = time.time()
+    elapsed = str((end - start))[:4]  # Calculate the time it took to update the service
+    logger.info(f'Update for service \'{name}\' successful, took {elapsed} seconds ({full_image})')
+    success_message = f'Update successful. Took {elapsed} seconds.'
+    config.apprise.notify(title=f'Service: `{name}`', body=success_message, notify_type=NotifyType.SUCCESS)
 
 
 def is_service_outdated(client: DockerClient, service: Service) -> tuple:
