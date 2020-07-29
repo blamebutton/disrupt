@@ -1,10 +1,15 @@
 # Project
+/.examples
+/.github
+/.travis
+/docker
+/venv
 .dockerignore
 .gitignore
+.travis.yml
+Dockerfile
+LICENSE
 README.md
-
-# Python
-/venv
 
 # JetBrains
 /.idea
