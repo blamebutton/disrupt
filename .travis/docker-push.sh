@@ -1,13 +1,13 @@
 #!/usr/bin/env sh
-echo "$DOCKER_PASS" | docker login -u $DOCKER_USER --password-stdin
+echo "$DOCKER_PASS" | docker login -u "${DOCKER_USER}" --password-stdin
 
-if [[ "${TRAVIS_BRANCH}" == "master" ]]; then
+if [ "${TRAVIS_BRANCH}" = "master" ]; then
     TAG="latest"
     docker tag "${IMAGE}" "${IMAGE}:${TAG}"
     docker push "${IMAGE}:${TAG}"
 fi
 
-if [[ -z "${TRAVIS_TAG}" ]]; then
+if [ -z "${TRAVIS_TAG}" ]; then
     TAG="${TRAVIS_TAG}"
     docker tag "${IMAGE}" "${IMAGE}:${TAG}"
     docker push "${IMAGE}:${TAG}"
