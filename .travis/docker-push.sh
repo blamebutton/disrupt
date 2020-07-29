@@ -7,7 +7,7 @@ if [ "${TRAVIS_BRANCH}" = "master" ]; then
     docker push "${IMAGE}:${TAG}"
 fi
 
-if [ -z "${TRAVIS_TAG}" ]; then
+if [ -n "${TRAVIS_TAG}" ]; then
     TAG="${TRAVIS_TAG}"
     docker tag "${IMAGE}" "${IMAGE}:${TAG}"
     docker push "${IMAGE}:${TAG}"
